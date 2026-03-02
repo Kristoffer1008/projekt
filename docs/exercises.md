@@ -2,6 +2,42 @@
 
 This guide shows how to build a multi-agent simulation using separate MQTT-communicating notebooks.
 
+## Phase 1: Minimal Working Example (Single Agent, No MQTT)
+
+Create `notebooks/agent_trigger.ipynb` as a **single Trigger agent** notebook with local in-memory simulation only.
+
+### Phase 1 scope
+
+- Load configuration via `simulated_city.config.load_config()`.
+- Initialize local person states with deterministic randomness.
+- Run a movement loop with boundary reflection.
+- Track local `health_status` values in memory.
+- Do not connect to MQTT and do not publish/subscribe in this phase.
+
+### Recommended cell order
+
+1. **Setup cell**
+    - Import `load_config`, standard library utilities, and dataclass support.
+    - Load config and print active seed/delay values.
+2. **Initialization cell**
+    - Create a local `PersonState` model.
+    - Initialize persons and set one person to `infected`, remaining to `susceptible`.
+3. **Simulation loop cell**
+    - Apply deterministic movement.
+    - Reflect movement at boundaries.
+    - Print per-step local summary (`susceptible`, `infected`, `recovered`).
+4. **Schema preview cell**
+    - Print one local dictionary payload shape for a future publishing step.
+    - Keep this local-only; no MQTT call in Phase 1.
+
+### Phase 1 checklist
+
+- [ ] Notebook contains one agent only (`agent_trigger.ipynb`).
+- [ ] Config is loaded via `simulated_city.config.load_config()`.
+- [ ] No MQTT usage appears in notebook code.
+- [ ] Boundary reflection is observable in step output.
+- [ ] Local person schema preview is printed.
+
 ## Principle: Many Small Notebooks, Not One Big File
 
 Each agent or component is a **separate notebook** that:

@@ -48,7 +48,11 @@ All topics are scoped under `simulated-city/pandemic` (or `${mqtt.base_topic}/pa
 - Trigger emits movement states continuously.
 - Observer converts movement states into exposure events.
 - Control applies epidemic rules and emits health updates.
-- Response aggregates updates into visualization-ready metrics.
+- Response aggregates updates into visualization-ready metrics and publishes `response/metrics` on every simulation step.
+
+### State and Publishing Rules
+- Health state transitions are one-way: `susceptible -> infected -> recovered`.
+- `recovered` is terminal and cannot transition back to `susceptible` or `infected`.
 
 ---
 
@@ -161,14 +165,14 @@ Rationale: classes hold long-lived state and MQTT client behavior; functions kee
 
 ---
 
-## 5. Open Questions
+## 5. Final Decisions/Assumptions
 
-- Should infection be evaluated only by the Control agent, or partly by Observer (Observer currently emits eligibility, not final infection)? The infection shoould be evaluated by both the control agent and also the observer
-- Is recovery deterministic exactly at `recovery_days`, or probabilistic after that threshold? The recovery deterministic exactly at recover_days.
+- Should infection be evaluated only by the Control agent, or partly by Observer (Observer currently emits eligibility, not final infection)? Observer detects and publishes exposure candidates, while Control is the only agent that applies probability/recovery rules and updates health state.
+- Is recovery deterministic exactly at `recovery_days`, or probabilistic after that threshold? Recovery is deterministic exactly at `recovery_days`.
 - Should city boundaries wrap around (torus) or reflect/clip movement at edges? it should reflect movement at edges
 - Does one simulation step represent one second, one minute, or configurable simulated time independent of wall-clock sleep? every step is 0.25 hours
-- Should the dashboard subscribe to all raw topics or only consolidated `response/metrics`?
-- Should response outputs include neighborhood-level metrics, or only city-wide totals?
-- The docs currently mention helper names like `connect_mqtt` / `publish_json_checked`, while current library code also exposes connector/publisher classes; which API should be canonical for notebooks?
+- Should the dashboard subscribe to all raw topics or only consolidated `response/metrics`? It should subsribe to all raw data.
+- Should response outputs include neighborhood-level metrics, or only city-wide totals? Only city-wide totals.
+- The docs currently mention helper names like `connect_mqtt` / `publish_json_checked`, while current library code also exposes connector/publisher classes; which API should be canonical for notebooks? it should be helper names like `connect_mqtt` / `publish_json_checked`
 
 These assumptions are intentionally explicit so they can be validated before implementation planning.
