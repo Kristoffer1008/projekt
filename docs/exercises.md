@@ -38,6 +38,39 @@ Create `notebooks/agent_trigger.ipynb` as a **single Trigger agent** notebook wi
 - [ ] Boundary reflection is observable in step output.
 - [ ] Local person schema preview is printed.
 
+## Phase 3: Trigger Agent MQTT Publishing
+
+Update `notebooks/agent_trigger.ipynb` so the Trigger agent publishes person-state updates.
+
+### Phase 3 scope
+
+- Connect with `mqtt.connect_mqtt(mqtt_cfg)`.
+- Publish each person state with `mqtt.publish_json_checked(client, topic, data)`.
+- Topic must be: `${mqtt.base_topic}/pandemic/trigger/person_state`.
+- Payload must include: `step`, `ts`, `person_id`, `lat`, `lon`, `health_status`.
+
+### Recommended cell order
+
+1. **Config + MQTT setup cell**
+    - Load config with `load_config()`.
+    - Resolve `mqtt_cfg` and Trigger topic string.
+2. **Initialization cell**
+    - Build initial in-memory persons from simulation config.
+3. **Publish loop cell**
+    - Connect to MQTT.
+    - Move persons and publish each person-state payload per publish cadence.
+4. **Cleanup cell**
+    - Print one final payload preview.
+    - Disconnect client cleanly.
+
+### Phase 3 checklist
+
+- [ ] Notebook still represents one agent only.
+- [ ] Uses `mqtt.connect_mqtt()` to connect.
+- [ ] Uses `mqtt.publish_json_checked()` for publishing.
+- [ ] Publishes to `${mqtt.base_topic}/pandemic/trigger/person_state`.
+- [ ] Payload contains required keys (`step`, `ts`, `person_id`, `lat`, `lon`, `health_status`).
+
 ## Principle: Many Small Notebooks, Not One Big File
 
 Each agent or component is a **separate notebook** that:

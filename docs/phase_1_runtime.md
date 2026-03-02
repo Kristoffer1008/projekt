@@ -1,10 +1,13 @@
-# Phase 1 Runtime Guide
+# Phase 1 Runtime Guide (Instructor Validation)
+
+This guide is written for quick instructor validation of the Phase 1 deliverable.
 
 ## 1. What Was Created
 
 ### Notebooks/Scripts
 - Created notebook: `notebooks/agent_trigger.ipynb`
 - Updated documentation: `docs/exercises.md` (new Phase 1 section)
+- This runtime guide: `docs/phase_1_runtime.md`
 
 ### Library modules added to `src/simulated_city/`
 - None in Phase 1.
@@ -31,6 +34,10 @@ Expected observation flow:
 - After Cell 4: 10 step lines are printed with counts and a sample person position.
 - After Cell 5: one dictionary-like message preview is printed.
 
+Instructor check:
+- Confirm only one agent notebook is involved in this phase.
+- Confirm there is no MQTT connect/publish/subscribe behavior.
+
 ### Workflow B: Repeatability check (determinism)
 1. Restart notebook kernel.
 2. Re-run Cells 2–5.
@@ -40,6 +47,9 @@ Expected result:
 - With the same config seed, outputs should repeat exactly.
 - If outputs differ, check `simulation.seed` and random-seed loading behavior.
 
+Instructor check:
+- Run this workflow once to verify deterministic behavior instead of visual similarity.
+
 ---
 
 ## 3. Expected Output
@@ -47,8 +57,8 @@ Expected result:
 ### Cell 2 — Load config
 **Purpose:** Confirm config is loaded and deterministic random settings are active.
 
-**Expected output format:**
-- `Loaded config. Deterministic seed=<number>, step_delay_s=<number>`
+**Exact expected output (default config):**
+- `Loaded config. Deterministic seed=42, step_delay_s=0.0`
 
 **Success criteria:**
 - Message appears once.
@@ -74,13 +84,19 @@ Expected result:
 ### Cell 4 — Run movement loop with edge reflection
 **Purpose:** Simulate local movement for 10 steps and verify boundary reflection.
 
-**Expected output format:**
-- First line: `Simulation start UTC: <ISO-8601 timestamp>`
-- Ten lines with this shape:
-  - `step=00 sample=person-000 x=<float> y=<float> susceptible=11 infected=1 recovered=0`
-  - ... up to `step=09 ...`
-- Final line:
-  - `Phase 1 simulation complete (local state only, no MQTT).`
+**Exact expected output (default config):**
+- `Simulation start UTC: 2026-01-01T00:00:00+00:00`
+- `step=00 sample=person-000 x=0.635 y=0.019 susceptible=11 infected=1 recovered=0`
+- `step=01 sample=person-000 x=0.630 y=0.014 susceptible=11 infected=1 recovered=0`
+- `step=02 sample=person-000 x=0.626 y=0.008 susceptible=11 infected=1 recovered=0`
+- `step=03 sample=person-000 x=0.621 y=0.003 susceptible=11 infected=1 recovered=0`
+- `step=04 sample=person-000 x=0.617 y=0.003 susceptible=11 infected=1 recovered=0`
+- `step=05 sample=person-000 x=0.612 y=0.008 susceptible=11 infected=1 recovered=0`
+- `step=06 sample=person-000 x=0.608 y=0.014 susceptible=11 infected=1 recovered=0`
+- `step=07 sample=person-000 x=0.603 y=0.019 susceptible=11 infected=1 recovered=0`
+- `step=08 sample=person-000 x=0.599 y=0.025 susceptible=11 infected=1 recovered=0`
+- `step=09 sample=person-000 x=0.594 y=0.030 susceptible=11 infected=1 recovered=0`
+- `Phase 1 simulation complete (local state only, no MQTT).`
 
 **Success criteria:**
 - Steps run from `00` to `09`.
@@ -95,20 +111,9 @@ Expected result:
 ### Cell 5 — Local publishing-ready schema preview
 **Purpose:** Show minimal local message structure for next phases without sending MQTT.
 
-**Expected output format:**
-- A dictionary with keys:
-  - `step`, `ts`, `person_id`, `x`, `y`, `health_status`
-
-Example shape:
+**Exact expected output (default config):**
 ```python
-{
-  'step': 9,
-  'ts': '2026-...+00:00',
-  'person_id': 'person-000',
-  'x': 0.123456,
-  'y': 0.654321,
-  'health_status': 'infected'
-}
+{'step': 9, 'ts': '2026-01-01T02:15:00+00:00', 'person_id': 'person-000', 'x': 0.594433, 'y': 0.030347, 'health_status': 'infected'}
 ```
 
 **Success criteria:**
@@ -171,3 +176,8 @@ Interpretation:
 - `verify_setup.py`: confirms dependencies/environment setup.
 - `validate_structure.py`: confirms repository structure rules.
 - `pytest`: confirms existing automated tests still pass.
+
+Expected interpretation for this repository state:
+- `verify_setup.py` should pass.
+- `validate_structure.py` may show a non-blocking warning that the Phase 1 agent notebook does not call MQTT helpers; this is expected because Phase 1 explicitly excludes MQTT.
+- `pytest` may fail in `tests/test_mqtt_profiles.py` for `hivemq_cloud` when cloud credentials are unavailable or unauthorized; this is environment-related and not a Phase 1 logic failure.

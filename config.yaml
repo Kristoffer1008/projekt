@@ -55,6 +55,37 @@ mqtt:
   # Topic defaults (projects can change these)
   base_topic: "simulated-city"
 
+simulation:
+  # Random seed for deterministic workshop runs.
+  seed: 42
+
+  # Time controls
+  time_step_s: 1.0
+  simulated_hours_per_step: 0.25
+  publish_every_n_steps: 1
+  total_steps: 1440
+  step_delay_s: 0.0
+  start_time: "2026-01-01T00:00:00Z"
+
+  # Population and health parameters
+  population_size: 300
+  initial_infected: 5
+  infection_radius_m: 2.0
+  infection_probability: 0.5
+  recovery_days: 10
+  max_speed_m_per_s: 1.4
+
+  # City geometry (Copenhagen defaults)
+  city_center:
+    lat: 55.6761
+    lon: 12.5683
+
+  bounds:
+    min_lat: 55.62
+    max_lat: 55.72
+    min_lon: 12.48
+    max_lon: 12.66
+
 # EXAMPLE: To use multiple MQTT brokers simultaneously, uncomment and edit above.
 # Replace the single "profile: local" line with:
 #

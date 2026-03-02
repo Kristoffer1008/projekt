@@ -6,6 +6,43 @@ This document covers everything in `simulated_city.mqtt`:
 
 - `MqttConnector`
 - `MqttPublisher`
+- `connect_mqtt`
+- `publish_json_checked`
+
+## Phase 3 Trigger Topic Contract
+
+Phase 3 uses this topic and payload for Trigger agent publishing:
+
+- Topic: `${mqtt.base_topic}/pandemic/trigger/person_state`
+- Publisher: `notebooks/agent_trigger.ipynb`
+- Subscribers: none yet in Phase 3 (will be added in later phases)
+
+Payload schema:
+
+```json
+{
+  "step": 0,
+  "ts": "2026-01-01T00:00:00+00:00",
+  "person_id": "person-000",
+  "lat": 55.683937,
+  "lon": 12.484495,
+  "health_status": "infected"
+}
+```
+
+## Phase 3 Helper API (Notebook-friendly)
+
+Use helper functions for concise notebook code:
+
+```python
+import simulated_city.mqtt as mqtt
+
+client = mqtt.connect_mqtt(mqtt_cfg)
+mqtt.publish_json_checked(client, topic, payload)
+```
+
+- `connect_mqtt(mqtt_cfg)` connects and returns a paho MQTT client.
+- `publish_json_checked(client, topic, data)` JSON-encodes data and raises on publish failure.
 
 ## Quick Start: Using Multiple Brokers
 

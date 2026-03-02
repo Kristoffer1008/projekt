@@ -54,6 +54,22 @@ class SimulationConfig:
     # If false, emit only when crossing each N% boundary.
     publish_every_deposit: bool = False
     step_delay_s: float = 0.0
+    time_step_s: float = 1.0
+    simulated_hours_per_step: float = 0.25
+    publish_every_n_steps: int = 1
+    total_steps: int = 1440
+    population_size: int = 300
+    initial_infected: int = 5
+    infection_radius_m: float = 2.0
+    infection_probability: float = 0.5
+    recovery_days: int = 10
+    max_speed_m_per_s: float = 1.4
+    city_center_lat: float = 55.6761
+    city_center_lon: float = 12.5683
+    bounds_min_lat: float = 55.62
+    bounds_max_lat: float = 55.72
+    bounds_min_lon: float = 12.48
+    bounds_max_lon: float = 12.66
     # Optional: fixed simulation start timestamp (UTC) for deterministic logs.
     # If None, the simulator uses the current wall-clock time.
     start_time: datetime | None = None
@@ -295,6 +311,54 @@ def _parse_simulation_config(raw: Any) -> SimulationConfig | None:
 
     publish_every_deposit = bool(raw.get("publish_every_deposit") or False)
 
+    time_step_raw = raw.get("time_step_s")
+    if time_step_raw is None:
+        time_step_raw = raw.get("timestep_seconds")
+    time_step_s = float(time_step_raw) if time_step_raw is not None else 1.0
+
+    simulated_hours_per_step_raw = raw.get("simulated_hours_per_step")
+    simulated_hours_per_step = (
+        float(simulated_hours_per_step_raw) if simulated_hours_per_step_raw is not None else 0.25
+    )
+
+    publish_every_n_steps_raw = raw.get("publish_every_n_steps")
+    publish_every_n_steps = int(publish_every_n_steps_raw) if publish_every_n_steps_raw is not None else 1
+
+    total_steps_raw = raw.get("total_steps")
+    total_steps = int(total_steps_raw) if total_steps_raw is not None else 1440
+
+    population_size_raw = raw.get("population_size")
+    population_size = int(population_size_raw) if population_size_raw is not None else 300
+
+    initial_infected_raw = raw.get("initial_infected")
+    initial_infected = int(initial_infected_raw) if initial_infected_raw is not None else 5
+
+    infection_radius_raw = raw.get("infection_radius_m")
+    infection_radius_m = float(infection_radius_raw) if infection_radius_raw is not None else 2.0
+
+    infection_probability_raw = raw.get("infection_probability")
+    infection_probability = float(infection_probability_raw) if infection_probability_raw is not None else 0.5
+
+    recovery_days_raw = raw.get("recovery_days")
+    recovery_days = int(recovery_days_raw) if recovery_days_raw is not None else 10
+
+    max_speed_raw = raw.get("max_speed_m_per_s")
+    max_speed_m_per_s = float(max_speed_raw) if max_speed_raw is not None else 1.4
+
+    city_center_raw = raw.get("city_center") or {}
+    if city_center_raw and not isinstance(city_center_raw, dict):
+        raise ValueError("Config key 'simulation.city_center' must be a mapping")
+    city_center_lat = float(city_center_raw.get("lat") if city_center_raw else raw.get("city_center_lat") or 55.6761)
+    city_center_lon = float(city_center_raw.get("lon") if city_center_raw else raw.get("city_center_lon") or 12.5683)
+
+    bounds_raw = raw.get("bounds") or {}
+    if bounds_raw and not isinstance(bounds_raw, dict):
+        raise ValueError("Config key 'simulation.bounds' must be a mapping")
+    bounds_min_lat = float(bounds_raw.get("min_lat") if bounds_raw else raw.get("bounds_min_lat") or 55.62)
+    bounds_max_lat = float(bounds_raw.get("max_lat") if bounds_raw else raw.get("bounds_max_lat") or 55.72)
+    bounds_min_lon = float(bounds_raw.get("min_lon") if bounds_raw else raw.get("bounds_min_lon") or 12.48)
+    bounds_max_lon = float(bounds_raw.get("max_lon") if bounds_raw else raw.get("bounds_max_lon") or 12.66)
+
     # Optional wall-clock delay between timesteps (useful for MQTT testing).
     step_delay_raw = raw.get("step_delay_s")
     if step_delay_raw is None:
@@ -334,6 +398,22 @@ def _parse_simulation_config(raw: Any) -> SimulationConfig | None:
         status_boundary_pct=status_boundary_pct,
         publish_every_deposit=publish_every_deposit,
         step_delay_s=step_delay_s,
+        time_step_s=time_step_s,
+        simulated_hours_per_step=simulated_hours_per_step,
+        publish_every_n_steps=publish_every_n_steps,
+        total_steps=total_steps,
+        population_size=population_size,
+        initial_infected=initial_infected,
+        infection_radius_m=infection_radius_m,
+        infection_probability=infection_probability,
+        recovery_days=recovery_days,
+        max_speed_m_per_s=max_speed_m_per_s,
+        city_center_lat=city_center_lat,
+        city_center_lon=city_center_lon,
+        bounds_min_lat=bounds_min_lat,
+        bounds_max_lat=bounds_max_lat,
+        bounds_min_lon=bounds_min_lon,
+        bounds_max_lon=bounds_max_lon,
         start_time=start_time,
         seed=seed,
         locations=tuple(locations),

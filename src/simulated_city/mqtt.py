@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import socket
 import ssl
@@ -49,7 +50,11 @@ class MqttConnector:
             logger.error(f"Failed to connect to MQTT broker, return code {rc}")
 
     def _on_disconnect(self, client, userdata, flags, reason, properties):
-        logger.warning(f"Disconnected from MQTT broker (reason={reason}). Reconnecting...")
+        reason_text = str(reason)
+        if "Normal disconnection" in reason_text:
+            logger.info(f"Disconnected from MQTT broker (reason={reason_text}).")
+        else:
+            logger.warning(f"Disconnected from MQTT broker (reason={reason_text}). Reconnecting...")
         self.connected.clear()
 
     def connect(self):
@@ -96,3 +101,37 @@ def _make_client_id(prefix: str, suffix: str | None) -> str:
     if suffix:
         return f"{safe_prefix}-{suffix}"
     return safe_prefix
+
+
+def connect_mqtt(cfg: MqttConfig, *, client_id_suffix: str | None = None):
+    """Connect to MQTT and return the underlying paho client.
+
+    This helper keeps notebook code short and beginner-friendly.
+    """
+
+    connector = MqttConnector(cfg, client_id_suffix=client_id_suffix)
+    connector.connect()
+    if not connector.wait_for_connection(timeout=10.0):
+        raise RuntimeError(f"Could not connect to MQTT broker at {cfg.host}:{cfg.port}")
+
+    client = connector.client
+    setattr(client, "_simulated_city_connector", connector)
+    return client
+
+
+def publish_json_checked(client, topic: str, data: dict, qos: int = 0, retain: bool = False):
+    """Publish JSON payload and validate basic publish status.
+
+    Returns True when publish is accepted by the client library.
+    """
+
+    payload = json.dumps(data, separators=(",", ":"))
+    result = client.publish(topic, payload=payload, qos=qos, retain=retain)
+
+    if qos > 0:
+        result.wait_for_publish()
+
+    if result.rc != 0:
+        raise RuntimeError(f"MQTT publish failed (rc={result.rc}) for topic '{topic}'")
+
+    return True
