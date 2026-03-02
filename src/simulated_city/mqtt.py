@@ -4,6 +4,7 @@ import json
 import logging
 import socket
 import ssl
+import time
 from typing import TYPE_CHECKING
 import threading
 
@@ -119,19 +120,45 @@ def connect_mqtt(cfg: MqttConfig, *, client_id_suffix: str | None = None):
     return client
 
 
-def publish_json_checked(client, topic: str, data: dict, qos: int = 0, retain: bool = False):
+def publish_json_checked(
+    client,
+    topic: str,
+    data: dict,
+    qos: int = 0,
+    retain: bool = False,
+    max_retries: int = 3,
+):
     """Publish JSON payload and validate basic publish status.
 
     Returns True when publish is accepted by the client library.
     """
 
     payload = json.dumps(data, separators=(",", ":"))
-    result = client.publish(topic, payload=payload, qos=qos, retain=retain)
 
-    if qos > 0:
-        result.wait_for_publish()
+    last_rc = 0
+    for attempt in range(1, max_retries + 1):
+        result = client.publish(topic, payload=payload, qos=qos, retain=retain)
 
-    if result.rc != 0:
-        raise RuntimeError(f"MQTT publish failed (rc={result.rc}) for topic '{topic}'")
+        if qos > 0:
+            result.wait_for_publish()
 
-    return True
+        last_rc = result.rc
+        if last_rc == 0:
+            return True
+
+        # Retry transient "not connected" / reconnect windows.
+        if attempt < max_retries:
+            if not client.is_connected():
+                try:
+                    client.reconnect()
+                except Exception:
+                    connector = getattr(client, "_simulated_city_connector", None)
+                    if connector is not None:
+                        try:
+                            connector.connect()
+                            connector.wait_for_connection(timeout=2.0)
+                        except Exception:
+                            pass
+            time.sleep(0.05 * attempt)
+
+    raise RuntimeError(f"MQTT publish failed (rc={last_rc}) for topic '{topic}'")

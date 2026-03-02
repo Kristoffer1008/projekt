@@ -71,6 +71,33 @@ Update `notebooks/agent_trigger.ipynb` so the Trigger agent publishes person-sta
 - [ ] Publishes to `${mqtt.base_topic}/pandemic/trigger/person_state`.
 - [ ] Payload contains required keys (`step`, `ts`, `person_id`, `lat`, `lon`, `health_status`).
 
+## Phase 4: Observer Agent Subscription and Exposure Detection
+
+Create `notebooks/agent_observer.ipynb` as a separate Observer agent notebook.
+
+### Phase 4 scope
+
+- Subscribe to `${mqtt.base_topic}/pandemic/trigger/person_state`.
+- Buffer person-state messages by step.
+- Compute pairwise distances between infected and susceptible persons.
+- Publish exposure candidates to `${mqtt.base_topic}/pandemic/observer/exposure_event`.
+- Publish city snapshots to `${mqtt.base_topic}/pandemic/observer/city_snapshot`.
+- Keep health transitions out of Observer (Control owns state transitions in later phases).
+
+### Multi-notebook run steps
+
+1. Open `notebooks/agent_observer.ipynb` and run Cells 1–4 (Observer starts listening).
+2. Open `notebooks/agent_trigger.ipynb` and run Cells 1–4 (Trigger publishes person states).
+3. Return to `notebooks/agent_observer.ipynb` and run Cell 5 (summary + disconnect).
+
+### Phase 4 checklist
+
+- [ ] Observer uses `mqtt.connect_mqtt()` and `mqtt.publish_json_checked()`.
+- [ ] Observer subscribes to Trigger person-state topic.
+- [ ] Observer publishes exposure events with required keys.
+- [ ] Observer publishes city snapshots for completed steps.
+- [ ] Trigger and Observer run as separate notebooks/processes.
+
 ## Principle: Many Small Notebooks, Not One Big File
 
 Each agent or component is a **separate notebook** that:

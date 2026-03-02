@@ -44,6 +44,43 @@ mqtt.publish_json_checked(client, topic, payload)
 - `connect_mqtt(mqtt_cfg)` connects and returns a paho MQTT client.
 - `publish_json_checked(client, topic, data)` JSON-encodes data and raises on publish failure.
 
+## Phase 4 Observer Topic Contracts
+
+Observer subscribes to Trigger state and publishes exposure candidates plus city snapshots.
+
+- Subscribe topic: `${mqtt.base_topic}/pandemic/trigger/person_state`
+- Publish topic: `${mqtt.base_topic}/pandemic/observer/exposure_event`
+- Publish topic: `${mqtt.base_topic}/pandemic/observer/city_snapshot`
+
+### `observer/exposure_event` payload schema
+
+```json
+{
+  "step": 0,
+  "ts": "2026-01-01T00:00:00+00:00",
+  "source_id": "person-000",
+  "target_id": "person-111",
+  "distance_m": 1.732,
+  "within_radius": true
+}
+```
+
+### `observer/city_snapshot` payload schema
+
+```json
+{
+  "step": 0,
+  "ts": "2026-01-01T00:00:00+00:00",
+  "population": 300,
+  "infected_count": 5,
+  "susceptible_count": 295,
+  "recovered_count": 0,
+  "active_exposures": 2
+}
+```
+
+Observer only detects exposure candidates. It never changes health state.
+
 ## Quick Start: Using Multiple Brokers
 
 The configuration supports routing different messages to different brokers:
