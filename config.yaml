@@ -68,12 +68,12 @@ simulation:
   start_time: "2026-01-01T00:00:00Z"
 
   # Population and health parameters
-  population_size: 300
+  population_size: 200
   initial_infected: 5
   infection_radius_m: 2.0
-  infection_probability: 0.5
+  infection_probability: 1
   recovery_days: 10
-  max_speed_m_per_s: 1.4
+  max_speed_m_per_s: 1.67
 
   # City geometry (Copenhagen defaults)
   city_center:
@@ -81,10 +81,10 @@ simulation:
     lon: 12.5683
 
   bounds:
-    min_lat: 55.62
-    max_lat: 55.72
-    min_lon: 12.48
-    max_lon: 12.66
+    min_lat: 55.67178
+    max_lat: 55.67563
+    min_lon: 12.56483
+    max_lon: 12.57193
 
 # EXAMPLE: To use multiple MQTT brokers simultaneously, uncomment and edit above.
 # Replace the single "profile: local" line with:

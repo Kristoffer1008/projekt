@@ -124,6 +124,35 @@ Create `notebooks/dashboard.ipynb` as a **read-only visualization agent**.
 - [ ] Dashboard displays trigger person markers and snapshot indicators.
 - [ ] Dashboard remains read-only (no simulation control logic).
 
+## Phase 6: Control and Response Agents
+
+Create `notebooks/agent_control.ipynb` and `notebooks/agent_response.ipynb` as separate MQTT agents.
+
+### Phase 6 scope
+
+- Control subscribes to Trigger person-state and Observer exposure events.
+- Control publishes health transitions to `${mqtt.base_topic}/pandemic/control/health_update`.
+- Control enforces one-way transitions (`susceptible -> infected -> recovered`) and keeps `recovered` terminal.
+- Response subscribes to Observer city snapshots and Control health updates.
+- Response publishes `${mqtt.base_topic}/pandemic/response/metrics` once per simulation step.
+
+### Multi-notebook run steps
+
+1. Start `notebooks/agent_observer.ipynb` and run Cells 1–4.
+2. Start `notebooks/agent_control.ipynb` and run Cells 1–4.
+3. Start `notebooks/agent_response.ipynb` and run Cells 1–4.
+4. Start `notebooks/dashboard.ipynb` and run Cells 1–4.
+5. Start `notebooks/agent_trigger.ipynb` and run Cells 1–4.
+6. Run summary/cleanup cells in Control, Response, and Dashboard notebooks.
+
+### Phase 6 checklist
+
+- [ ] `agent_control.ipynb` subscribes to Trigger + Observer topics and publishes `control/health_update`.
+- [ ] Control applies only one-way health transitions and never reverts recovered persons.
+- [ ] `agent_response.ipynb` subscribes to Observer + Control topics.
+- [ ] Response publishes one `response/metrics` payload per simulation step.
+- [ ] All five notebooks run as independent processes communicating over MQTT.
+
 ## Principle: Many Small Notebooks, Not One Big File
 
 Each agent or component is a **separate notebook** that:

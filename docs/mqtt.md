@@ -81,6 +81,61 @@ Observer subscribes to Trigger state and publishes exposure candidates plus city
 
 Observer only detects exposure candidates. It never changes health state.
 
+## Phase 6 Control and Response Topic Contracts
+
+Phase 6 adds two new agents:
+
+- Control subscribes to Trigger and Observer and publishes health transitions.
+- Response subscribes to Observer and Control and publishes city metrics once per step.
+
+### Control topics
+
+- Subscribe topic: `${mqtt.base_topic}/pandemic/trigger/person_state`
+- Subscribe topic: `${mqtt.base_topic}/pandemic/observer/exposure_event`
+- Publish topic: `${mqtt.base_topic}/pandemic/control/health_update`
+
+### `control/health_update` payload schema
+
+```json
+{
+  "step": 12,
+  "ts": "2026-01-01T12:00:00+00:00",
+  "person_id": "person-017",
+  "from_status": "susceptible",
+  "to_status": "infected",
+  "reason": "infection",
+  "days_infected": 0.0
+}
+```
+
+Control applies one-way transitions only:
+
+- `susceptible -> infected`
+- `infected -> recovered`
+- `recovered` is terminal
+
+### Response topics
+
+- Subscribe topic: `${mqtt.base_topic}/pandemic/observer/city_snapshot`
+- Subscribe topic: `${mqtt.base_topic}/pandemic/control/health_update`
+- Publish topic: `${mqtt.base_topic}/pandemic/response/metrics`
+
+### `response/metrics` payload schema
+
+```json
+{
+  "step": 12,
+  "ts": "2026-01-01T12:00:00+00:00",
+  "total_population": 300,
+  "susceptible": 260,
+  "infected": 25,
+  "recovered": 15,
+  "prevalence": 0.0833333333
+}
+```
+
+Response publishes one metrics message per observed simulation step.
+
 ## Quick Start: Using Multiple Brokers
 
 The configuration supports routing different messages to different brokers:

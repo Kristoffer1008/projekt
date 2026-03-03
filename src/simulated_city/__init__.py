@@ -19,6 +19,16 @@ from .geo import (
 	utm2wgs,
 )
 from .mqtt import MqttConnector, MqttPublisher
+from .epidemic import (
+	VALID_HEALTH_STATES,
+	build_health_update,
+	build_response_metrics,
+	can_transition,
+	days_infected,
+	parse_exposure_event,
+	parse_person_state,
+	recovery_steps,
+)
 
 __all__ = [
 	"AppConfig",
@@ -34,4 +44,12 @@ __all__ = [
 	"utm2wgs",
 	"MqttConnector",
 	"MqttPublisher",
+	"VALID_HEALTH_STATES",
+	"parse_person_state",
+	"parse_exposure_event",
+	"build_health_update",
+	"build_response_metrics",
+	"can_transition",
+	"recovery_steps",
+	"days_infected",
 ]
