@@ -60,11 +60,11 @@ simulation:
   seed: 42
 
   # Time controls
-  time_step_s: 2.0
+  time_step_s: 1.0
   simulated_hours_per_step: 0.25
   publish_every_n_steps: 2
   total_steps: 1440
-  step_delay_s: 0.5
+  step_delay_s: 0.1
   start_time: "2026-01-01T00:00:00Z"
 
   # Population and health parameters
@@ -73,7 +73,7 @@ simulation:
   infection_radius_m: 2.0
   infection_probability: 1.0
   recovery_days: 10
-  max_speed_m_per_s: 3.0
+  max_speed_m_per_s: 6
 
   # City geometry (Copenhagen defaults)
   city_center:
