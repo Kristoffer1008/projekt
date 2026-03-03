@@ -98,6 +98,32 @@ Create `notebooks/agent_observer.ipynb` as a separate Observer agent notebook.
 - [ ] Observer publishes city snapshots for completed steps.
 - [ ] Trigger and Observer run as separate notebooks/processes.
 
+## Phase 5: Dashboard Visualization (anymap-ts)
+
+Create `notebooks/dashboard.ipynb` as a **read-only visualization agent**.
+
+### Phase 5 scope
+
+- Subscribe to raw simulation topics under `${mqtt.base_topic}/pandemic/#`.
+- Render person markers on an anymap-ts map from Trigger topic updates.
+- Show city-level indicators from Observer snapshot messages.
+- Keep dashboard read-only (no publishing/state-authority decisions).
+
+### Multi-notebook run steps
+
+1. Start `notebooks/agent_observer.ipynb` and run Cells 1–4.
+2. Start `notebooks/dashboard.ipynb` and run Cells 1–4.
+3. Start `notebooks/agent_trigger.ipynb` and run Cells 1–4.
+4. Return to `notebooks/dashboard.ipynb` and run Cell 5 for status summary.
+
+### Phase 5 checklist
+
+- [ ] Dashboard uses anymap-ts only (no folium/matplotlib/plotly live mapping).
+- [ ] Dashboard map center comes from config (`city_center_lon`, `city_center_lat`).
+- [ ] Dashboard subscribes to raw simulation topics (`.../pandemic/#`).
+- [ ] Dashboard displays trigger person markers and snapshot indicators.
+- [ ] Dashboard remains read-only (no simulation control logic).
+
 ## Principle: Many Small Notebooks, Not One Big File
 
 Each agent or component is a **separate notebook** that:

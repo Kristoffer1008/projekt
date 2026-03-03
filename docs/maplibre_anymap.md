@@ -45,6 +45,52 @@ m = Map(
 m
 ```
 
+## Phase 5 Dashboard Pattern (MQTT + anymap-ts)
+
+For the dashboard notebook, keep the map read-only and subscribe to raw simulation topics.
+
+Minimal pattern:
+
+```python
+from anymap_ts import Map
+import simulated_city.mqtt as mqtt
+from simulated_city.config import load_config
+
+cfg = load_config()
+mqtt_cfg = cfg.mqtt
+sim_cfg = cfg.simulation
+
+topic_root = f"{mqtt_cfg.base_topic}/pandemic/#"
+topic_trigger = f"{mqtt_cfg.base_topic}/pandemic/trigger/person_state"
+
+dashboard_map = Map(
+    center=(sim_cfg.city_center_lon, sim_cfg.city_center_lat),
+    zoom=13,
+    height="620px",
+)
+dashboard_map.add_basemap("OpenStreetMap.Mapnik")
+
+client = mqtt.connect_mqtt(mqtt_cfg, client_id_suffix="dashboard")
+
+def on_message(client_obj, userdata, msg):
+    payload = json.loads(msg.payload.decode())
+    if msg.topic == topic_trigger:
+        dashboard_map.add_marker(
+            payload["lon"],
+            payload["lat"],
+            name=payload["person_id"],
+        )
+
+client.on_message = on_message
+client.subscribe(topic_root)
+```
+
+Notes:
+
+- Use config-driven center/bounds from `load_config()`, never hardcoded map coordinates.
+- Subscribe to `${base_topic}/pandemic/#` to visualize raw stream data.
+- Keep the dashboard read-only; no simulation decision logic in dashboard callbacks.
+
 Workshop-relevant arguments:
 
 - `center`: `(lng, lat)`
