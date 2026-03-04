@@ -70,7 +70,7 @@ simulation:
   # Population and health parameters
   population_size: 200
   initial_infected: 5
-  infection_radius_m: 5.0
+  infection_radius_m: 5
   infection_probability: 1.0
   recovery_days: 3
   max_speed_m_per_s: 6
