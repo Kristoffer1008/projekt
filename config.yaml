@@ -72,7 +72,7 @@ simulation:
   initial_infected: 5
   infection_radius_m: 5
   infection_probability: 1.0
-  recovery_days: 3
+  recovery_days: 1.5
   max_speed_m_per_s: 6
 
   # City geometry (Copenhagen defaults)
