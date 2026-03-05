@@ -106,6 +106,7 @@ Create `notebooks/dashboard.ipynb` as a **read-only visualization agent**.
 
 - Subscribe to raw simulation topics under `${mqtt.base_topic}/pandemic/#`.
 - Render person markers on an anymap-ts map from Trigger topic updates.
+- Render a live S/I/R time-series graph below the map from tracked person states.
 - Show city-level indicators from Observer snapshot messages.
 - Keep dashboard read-only (no publishing/state-authority decisions).
 
@@ -122,6 +123,7 @@ Create `notebooks/dashboard.ipynb` as a **read-only visualization agent**.
 - [ ] Dashboard map center comes from config (`city_center_lon`, `city_center_lat`).
 - [ ] Dashboard subscribes to raw simulation topics (`.../pandemic/#`).
 - [ ] Dashboard displays trigger person markers and snapshot indicators.
+- [ ] Dashboard shows a live S/I/R graph under the map.
 - [ ] Dashboard remains read-only (no simulation control logic).
 
 ## Phase 6: Control and Response Agents

@@ -2,6 +2,8 @@
 
 This guide validates Phase 5 only: a read-only dashboard notebook subscribes to raw MQTT simulation topics and renders live map overlays with anymap-ts.
 
+The dashboard also renders a live S/I/R time-series chart directly below the map.
+
 ## 1. What Was Created
 
 ### Notebooks/Scripts
@@ -79,6 +81,14 @@ Observe output:
 - `Connected to MQTT broker at 127.0.0.1:1883`
 - `Subscribed to simulated-city/pandemic/#`
 - `Dashboard is live. Run Trigger + Observer notebooks to see updates.`
+
+### Dashboard visualization panel
+**Purpose:** Confirm map + S/I/R chart update together as trigger messages arrive.
+
+Expected behavior:
+- Person markers update on map by `health_status` color.
+- The S/I/R graph under the map appends one point per processed step.
+- Latest step header above the graph shows current `susceptible`, `infected`, and `recovered` counts.
 
 ### Trigger Cell 4 — Feed live stream
 **Purpose:** Publish person states for dashboard/observer consumption.
